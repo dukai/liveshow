@@ -1,5 +1,7 @@
 "use strict";
 
+var socket = io();
+
 window.MediaSource = window.MediaSource || window.WebKitMediaSource;
 if (!!!window.MediaSource) {
   alert('MediaSource API is not available');
@@ -45,7 +47,8 @@ mediaSource.addEventListener('sourceopen', function(event){
 
 var reader = new FileReader();
 reader.addEventListener('load', function(e){
-  console.log(new Uint8Array(e.target.result));
+  //console.log(fromByteArray(new Uint8Array(e.target.result)));
+  //console.log(new Uint8Array(e.target.result));
   buffers.push(new Uint8Array(e.target.result));
   //sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
   notify();
@@ -57,8 +60,11 @@ navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia
 navigator.getUserMedia({video: true},function(stream){
   var mediaRecorder = new MediaRecorder(stream);
   mediaRecorder.addEventListener('dataavailable', function(event){
-    //console.log(event.data);
     reader.readAsArrayBuffer(event.data);
+    socket.emit('video', {
+      data: event.data,
+      time: new Date().getTime()
+    });
   });
 
   mediaRecorder.start(5000);
