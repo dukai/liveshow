@@ -1,7 +1,8 @@
 {
-  "name": "chat",
+  "name": "liveshow",
   "version": "0.0.1",
   "dependencies": {
+    "ebml": "^2.1.0",
     "express": "^4.10.2",
     "socket.io": "^1.4.5"
   }
