@@ -10,18 +10,21 @@ var decoder = new ebml.Decoder();
 //    throw err;
 //  decoder.write(data);
 //});
-var reader = new FileReader();
-
-reader.addEventListener('load', function(e){
-  
-  var ab = new Uint8Array(e.target.result);
-  var view = new DataView(ab);
-  console.log(view.getUint32(0, false));
-});
+//var reader = new FileReader();
+//
+//reader.addEventListener('load', function(e){
+//  
+//  var ab = new Uint8Array(e.target.result);
+//  var view = new DataView(ab);
+//  console.log(view.getUint32(0, false));
+//});
 fs.readFile('video/1464334215426', function(err, data) {
   if (err)
     throw err;
   console.log(data);
 
-  reader.readAsArrayBuffer(data);
+  //reader.readAsArrayBuffer(data);
+  //
+  //
+  console.log(data.readIntBE(0, 4).toString(16));
 });
