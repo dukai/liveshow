@@ -1,3 +1,8 @@
+var socket = io();
+
+socket.on('welcome', function(msg){
+  console.log(msg);
+});
 var FILE = '/video/1464334215426';
 var NUM_CHUNKS = 5;
 var video = document.querySelector('video');
