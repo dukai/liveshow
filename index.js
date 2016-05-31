@@ -9,14 +9,16 @@ app.use(express.static('./'));
 
 
 var videoList = [];
-var ebml = null;
+var ebml = {data: null, time: null};
 var last = null;
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  socket.emit('welcome', {
-    embl: embl,
-    last: last.data
+  socket.emit('live', {
+    data: ebml.data,
+    time: ebml.time,
+    timecode: 0,
+    type: 'ebml'
   });
 
   socket.on('disconnect', function(){
@@ -25,20 +27,29 @@ io.on('connection', function(socket){
 
 
   socket.on('video', function(msg){
-    if(!ebml){
-      ebml = msg.data;
-    }
     videoList.push(msg);
     last = msg;
     require('fs').writeFileSync(__dirname + '/video/' + msg.time, msg.data);
 
-    socket.emit('live', {
-      last: msg.data
-    });
-  });
-
-  socket.on('live', function(){
-    console.log('some user require to live show');
+    console.log(msg.data.readIntBE(0, 4).toString(16));
+    if(msg.data.readIntBE(0, 4).toString(16) == '1a45dfa3') {
+      ebml = msg;
+      io.emit('live', {
+        type: 'ebml',
+        data: msg.data,
+        time: msg.time,
+        timecode: 0
+      });
+    }
+    if(msg.data.readIntBE(0, 4).toString(16) == '1f43b675') {
+      console.log('trigger');
+      io.emit('live', {
+        type: 'cluster',
+        data: msg.data,
+        time: msg.time,
+        timecode: msg.data.readIntBE(14, 2)
+      });
+    }
   });
 
 });
